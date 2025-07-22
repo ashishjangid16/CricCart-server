@@ -22,7 +22,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.get("/", (_req, res) => {
-  res.send("E-Commerce API is running ");
+  res.send("CricCart API is running ");
 });
 
 export { app };
