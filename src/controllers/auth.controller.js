@@ -13,7 +13,6 @@ const generateToken = (user) => {
 };
 
 
-// Register
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -40,31 +39,31 @@ export const registerUser = async (req, res) => {
   }
 };
 
-//login;
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validate input
+    
     if (!email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
-    // 2. Find user
+  
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // 3. Match password
     
-    const isMatch = bcrypt.compare(password,user.password); // Assuming comparePassword is a method in your user model
+    
+    const isMatch = await bcrypt.compare(password,user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // 4. Generate token
-    const token = generateToken(user); // Assuming generateJWT() returns signed token
-    // 5. Send response
+    
+    const token = generateToken(user); 
+  
     res.status(200).json({
       success: true,
       message: 'Login successful',
