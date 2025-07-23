@@ -14,7 +14,7 @@ export const createProduct = async (req, res) => {
 
   
     const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "Ecommerce",
+      folder: "CricCart",
     });
     console.log("Cloudinary upload result:", result);
 
