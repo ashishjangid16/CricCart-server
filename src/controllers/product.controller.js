@@ -16,6 +16,8 @@ export const createProduct = async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "CricCart",
     });
+
+    console.log("result.secure_url");
     console.log("Cloudinary upload result:", result);
 
     const { title, description, price, category, stock } = req.body;
