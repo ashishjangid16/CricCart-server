@@ -11,7 +11,7 @@ export const uploadToCloudinary = async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream({ folder: "Ecommerce" }, (err, result) => {
+      cloudinary.uploader.upload_stream({ folder: "CricCart" }, (err, result) => {
         if (err) reject(err);
         else resolve(result);
       }).end(req.file.buffer);

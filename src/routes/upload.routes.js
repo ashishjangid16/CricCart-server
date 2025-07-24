@@ -4,7 +4,7 @@ import { upload } from "../middleware/upload.middleware.js";
 
 const router = express.Router();
 
-// Route: POST /api/upload
+
 router.post("/", upload.single("image"), uploadToCloudinary);
 
 export default router;
