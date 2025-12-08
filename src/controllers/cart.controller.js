@@ -32,6 +32,46 @@ export const addToCart = async (req, res) => {
     res.status(500).json({ success: false, message: "Error adding to cart" });
   }
 };
+
+export const syncCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { items } = req.body;
+
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({ message: "Invalid items format" });
+    }
+
+    // Convert frontend cart items to backend format
+    const formattedItems = items.map((item) => ({
+      product: item._id,
+      quantity: item.quantity || 1,
+    }));
+
+    let cart = await Cart.findOne({ user: userId });
+
+    if (!cart) {
+      cart = new Cart({
+        user: userId,
+        items: formattedItems,
+      });
+    } else {
+      cart.items = formattedItems;
+    }
+
+    await cart.save();
+    const populatedCart = await cart.populate("items.product");
+
+    res.status(200).json({
+      message: "Cart synced successfully",
+      cart: populatedCart,
+    });
+  } catch (error) {
+    console.error("Sync cart error:", error);
+    res.status(500).json({ message: "Error syncing cart" });
+  }
+};
+
 export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
@@ -49,12 +89,23 @@ export const getCart = async (req, res) => {
 
 export const removeFromCart = async (req, res) => {
   const { productId } = req.params;
-  const cart = await Cart.findOne({ user: req.user.id });
+  const cart = await Cart.findOne({ user: req.user._id });
 
   if (cart) {
-    cart.items = cart.items.filter(item => item.product != productId);
+    cart.items = cart.items.filter(item => item.product.toString() !== productId);
     await cart.save();
   }
 
   res.status(200).json(cart);
+};
+
+export const clearCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    await Cart.findOneAndUpdate({ user: userId }, { items: [] });
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    console.error("Clear cart error:", error);
+    res.status(500).json({ message: "Error clearing cart" });
+  }
 };
