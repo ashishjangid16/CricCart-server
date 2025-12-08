@@ -3,6 +3,13 @@ dotenv.config();
 
 import connectDB from "../utils/db.js";
 import { Product } from "../models/product.model.js";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -298,21 +305,45 @@ const productsData = [
 
 const createProducts = async () => {
   await connectDB();
-
   const products = [];
 
-  productsData.forEach((cat) => {
-    cat.products.forEach((prod) => {
+  // Upload local category images to Cloudinary (fallback to prod.image when needed)
+  const categoryLocalMap = {
+    Bats: './src/seed/images/bats.svg',
+    Balls: './src/seed/images/balls.svg',
+    Gloves: './src/seed/images/gloves.svg',
+    Pads: './src/seed/images/pads.svg',
+    Helmets: './src/seed/images/helmets.svg',
+    'Cricket Shoes': './src/seed/images/shoes.svg',
+    'Abdomen Guard': './src/seed/images/abdomen_guard.svg',
+  };
+
+  for (const cat of productsData) {
+    const localImage = categoryLocalMap[cat.category];
+    for (const prod of cat.products) {
+      let finalImage = prod.image;
+      const uploadSource = localImage || prod.image;
+      try {
+        const res = await cloudinary.uploader.upload(uploadSource, {
+          folder: `Ecommerce/${cat.category}`,
+          resource_type: 'image',
+        });
+        if (res && res.secure_url) finalImage = res.secure_url;
+      } catch (uploadErr) {
+        console.error(`Image upload failed for ${prod.title}:`, uploadErr.message || uploadErr);
+        finalImage = prod.image; // keep original URL as fallback
+      }
+
       products.push({
         title: prod.title,
         description: prod.description,
         price: prod.price,
         category: cat.category,
         stock: randomInt(5, 30),
-        imageUrl: prod.image,
+        imageUrl: finalImage,
       });
-    });
-  });
+    }
+  }
 
   try {
     const result = await Product.insertMany(products);
