@@ -11,8 +11,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
 const productsData = [
   {
     category: "Bats",
@@ -315,7 +313,7 @@ const createProducts = async () => {
         description: prod.description,
         price: prod.price,
         category: cat.category,
-        stock: randomInt(5, 30),
+        stock: 50,
         imageUrl: prod.image,
       });
     });

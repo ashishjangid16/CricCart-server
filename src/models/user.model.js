@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minlength: [6, "Password must be at least 6 characters"],
   },
+  passwordResetToken: {
+    type: String,
+    select: false,
+  },
+  passwordResetExpires: {
+    type: Date,
+    select: false,
+  },
   role: {
     type: String,
     enum: ["user", "admin"],
@@ -29,7 +37,7 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.generateJWT = function () {
   return jwt.sign(
     { _id: this._id, email: this.email },
-    process.env.ashish_jwt_secret_2025,
+    process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 };

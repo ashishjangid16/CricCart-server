@@ -1,12 +1,19 @@
+import path from "path";
 import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
 import { app } from "./app.js";
 
-dotenv.config({path:"../.env"});
+const envPath = path.resolve(process.cwd(), ".env");
+dotenv.config({ path: envPath });
 
-
-connectDB().then(() => {
-  app.listen(process.env.PORT || 8001, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
+connectDB()
+  .then(() => {
+    const port = process.env.PORT || 8001;
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
   });
-});

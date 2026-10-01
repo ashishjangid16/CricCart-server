@@ -20,9 +20,15 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  availableSizes: {
+    type: [String],
+    default: undefined,
+  },
   stock: {
     type: Number,
-    default: 1,
+    min: 0,
+    default: 50,
+    validate: Number.isInteger,
   },
 }, { timestamps: true });
 

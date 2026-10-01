@@ -1,6 +1,11 @@
 import { Product } from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
+const parseAvailableSizes = (sizes) => {
+  if (Array.isArray(sizes)) return sizes.map(String).map((size) => size.trim()).filter(Boolean);
+  if (typeof sizes === "string") return sizes.split(",").map((size) => size.trim()).filter(Boolean);
+  return undefined;
+};
 
 export const createProduct = async (req, res) => {
   try {
@@ -21,6 +26,7 @@ export const createProduct = async (req, res) => {
     console.log("Cloudinary upload result:", result);
 
     const { title, description, price, category, stock } = req.body;
+    const availableSizes = parseAvailableSizes(req.body.availableSizes);
 
     if (!title || !price || !category) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -32,6 +38,7 @@ export const createProduct = async (req, res) => {
       description,
       price,
       category,
+      ...(availableSizes && { availableSizes }),
       stock,
       imageUrl: result.secure_url, 
     });
@@ -63,8 +70,10 @@ export const getProduct = async (req, res) => {
 
 
 export const updateProduct = async (req, res) => {
+  const availableSizes = parseAvailableSizes(req.body.availableSizes);
   const product = await Product.findByIdAndUpdate(req.params.id, {
     ...req.body,
+    ...(availableSizes && { availableSizes }),
     ...(req.file && { imageUrl: req.file.path }),
   }, { new: true });
 
