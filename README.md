@@ -15,4 +15,3 @@ SMTP_FROM=CricCart <no-reply@example.com>
 FRONTEND_URL=http://localhost:3000
 ```
 
-Use the SMTP credentials provided by your email provider. Port `587` uses STARTTLS; port `465` uses TLS. Set `FRONTEND_URL` to the deployed frontend origin outside local development. Without SMTP settings, reset-link requests return a configuration error and no reset token is exposed by the API.

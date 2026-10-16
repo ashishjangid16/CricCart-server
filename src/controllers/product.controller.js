@@ -85,7 +85,7 @@ export const getProducts = async (req, res) => {
   try {
     const requestedPage = Number.parseInt(req.query.page, 10) || 1;
     const page = Math.max(1, requestedPage);
-    const limit = 10;
+    const limit = 8;
     const skip = (page - 1) * limit;
 
     const search = String(req.query.search || "").trim().slice(0, 100);
