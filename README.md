@@ -15,3 +15,4 @@ SMTP_FROM=CricCart <no-reply@example.com>
 FRONTEND_URL=http://localhost:3000
 ```
 
+XYZ
